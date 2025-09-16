@@ -1,0 +1,265 @@
+Algorand MCP Server Test Queries
+================================
+
+This document provides test queries for each tool in the Algorand MCP Server v1.0.0.
+
+BASIC TOOLS (4 tools)
+=====================
+
+1. Echo
+   "Test the echo functionality by sending a simple message"
+
+2. Calculate
+   "Calculate 2 + 2 * 3"
+
+3. Get Current Time
+   "What time is it in UTC?"
+
+4. Fund Testnet
+   "Fund this testnet address: [YOUR_TESTNET_ADDRESS]"
+
+CORE ALGORAND TOOLS (8 tools)
+=============================
+
+5. Generate Account
+   "Generate a new Algorand account for me"
+
+6. Get Account Info
+   "Get account information for address: [ALGORAND_ADDRESS]"
+
+7. Send Payment
+   "Send 1000000 microAlgos from [MNEMONIC] to [RECIPIENT_ADDRESS]"
+
+8. Create Asset
+   "Create a new asset called 'TestToken' with symbol 'TEST' and total supply 1000000 using mnemonic [CREATOR_MNEMONIC]"
+
+9. Opt In to Asset
+   "Opt in to asset ID 12345 using mnemonic [ACCOUNT_MNEMONIC]"
+
+10. Transfer Asset
+    "Transfer 100 units of asset ID 12345 from [SENDER_MNEMONIC] to [RECIPIENT_ADDRESS]"
+
+11. Get Asset Info
+    "Get information about asset ID 12345"
+
+12. Get Transaction
+    "Get details for transaction ID: [TRANSACTION_ID]"
+
+WALLET MANAGEMENT (2 tools)
+===========================
+
+13. Store Wallet
+    "Store a wallet named 'test-wallet' with mnemonic [MNEMONIC] and password 'test123'"
+
+14. Load Wallet
+    "Load the wallet named 'test-wallet' with password 'test123'"
+
+UTILITY TOOLS (10 tools)
+========================
+
+15. Validate Address
+    "Validate this Algorand address: [ALGORAND_ADDRESS]"
+
+16. Encode Address
+    "Encode this public key to an Algorand address: [PUBLIC_KEY_HEX]"
+
+17. Decode Address
+    "Decode this Algorand address to public key: [ALGORAND_ADDRESS]"
+
+18. Get Application Address
+    "Get the address for application ID 123"
+
+19. Verify Bytes
+    "Verify signature [SIGNATURE_BASE64] for bytes [BYTES_HEX] with address [ALGORAND_ADDRESS]"
+
+20. Sign Bytes
+    "Sign bytes [BYTES_HEX] with secret key [SECRET_KEY_HEX]"
+
+21. Compile TEAL
+    "Compile this TEAL code: [TEAL_SOURCE_CODE]"
+
+22. Disassemble TEAL
+    "Disassemble this TEAL bytecode: [TEAL_BYTECODE_BASE64]"
+
+23. Encode Object
+    "Encode this object to msgpack: {'name': 'test', 'value': 123}"
+
+24. Decode Object
+    "Decode this msgpack object: [MSGPACK_BYTES_BASE64]"
+
+API INTEGRATION TOOLS (12 tools)
+=================================
+
+Algod API (5 tools)
+-------------------
+
+25. Get Account Info
+    "Get account info from algod for address: [ALGORAND_ADDRESS]"
+
+26. Get Transaction Info
+    "Get transaction info from algod for transaction ID: [TRANSACTION_ID]"
+
+27. Get Asset Info
+    "Get asset info from algod for asset ID: 12345"
+
+28. Get Application Info
+    "Get application info from algod for application ID: 123"
+
+29. Get Pending Transactions
+    "Get pending transactions from algod mempool (max 10)"
+
+Indexer API (5 tools)
+---------------------
+
+30. Lookup Account
+    "Look up account by ID in indexer: [ALGORAND_ADDRESS]"
+
+31. Lookup Asset
+    "Look up asset by ID in indexer: 12345"
+
+32. Lookup Transaction
+    "Look up transaction by ID in indexer: [TRANSACTION_ID]"
+
+33. Search Accounts
+    "Search for accounts in indexer with limit 10"
+
+34. Search Transactions
+    "Search for transactions in indexer with limit 10"
+
+NFD API (3 tools)
+-----------------
+
+35. Get NFD
+    "Get NFD information for domain: example.algo"
+
+36. Get NFDs for Address
+    "Get all NFDs owned by address: [ALGORAND_ADDRESS]"
+
+37. Search NFDs
+    "Search for NFD domains containing 'test'"
+
+ADVANCED TRANSACTION TOOLS (8 tools)
+====================================
+
+38. Create Atomic Group
+    "Create an atomic group with these transactions: [TRANSACTION_ARRAY]"
+
+39. Sign Atomic Group
+    "Sign this atomic group with mnemonic: [MNEMONIC]"
+
+40. Submit Atomic Group
+    "Submit this signed atomic group: [SIGNED_TRANSACTIONS]"
+
+41. Create Application
+    "Create a new application with approval program [TEAL_CODE] and clear program [TEAL_CODE]"
+
+42. Call Application
+    "Call application ID 123 with arguments ['arg1', 'arg2']"
+
+43. Opt In Application
+    "Opt in to application ID 123"
+
+44. Close Out Application
+    "Close out from application ID 123"
+
+45. Create Key Registration Transaction
+    "Create key registration transaction with vote key [VOTE_KEY] and selection key [SELECTION_KEY]"
+
+46. Freeze Asset
+    "Freeze asset ID 12345 for address [TARGET_ADDRESS]"
+
+ARC-26 TOOLS (2 tools)
+======================
+
+47. Generate Algorand URI
+    "Generate an Algorand URI for address [ALGORAND_ADDRESS] with amount 1000000"
+
+48. Generate Algorand QR Code
+    "Generate a QR code for Algorand address [ALGORAND_ADDRESS] with label 'Test Payment'"
+
+KNOWLEDGE TOOLS (1 tool)
+========================
+
+49. Search Algorand Docs
+    "Search Algorand documentation for 'smart contracts'"
+
+SAMPLE TEST DATA
+================
+
+Testnet Address:
+7ZUECA7HFLZTXENRV24SHLU4AVPUTMTTDUFUBNBD64CJFD6YPX5D3LO5A
+
+Test Mnemonic (TESTNET ONLY):
+abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art
+
+Sample Transaction ID:
+SAMPLE_TRANSACTION_ID_HERE
+
+Sample Asset ID:
+12345
+
+TESTING TIPS
+============
+
+1. Start with basic tools (echo, calculate, get_current_time)
+2. Use testnet addresses and assets only
+3. Generate test accounts first
+4. Fund accounts with testnet faucet
+5. Test tools in logical order
+6. Check server logs for errors
+7. Verify results with Algorand Explorer
+
+ERROR TESTING
+=============
+
+Invalid Inputs:
+- Invalid address format
+- Non-existent transaction ID
+- Invalid mnemonic phrase
+- Negative amounts
+- Non-existent asset ID
+
+Network Errors:
+- Invalid API endpoints
+- Expired API tokens
+- Rate limiting
+- Network timeouts
+
+PERFORMANCE TESTING
+===================
+
+Load Testing:
+- Generate 10 accounts simultaneously
+- Create 5 assets in parallel
+- Send 20 transactions in sequence
+- Search 100 transactions
+
+Memory Testing:
+- Store 50 wallets
+- Load large transaction data
+- Process large TEAL programs
+- Handle large search results
+
+SECURITY TESTING
+================
+
+Input Validation:
+- Test with SQL injection attempts
+- Test with XSS payloads
+- Test with extremely long inputs
+- Test with special characters
+
+Access Control:
+- Test with invalid mnemonics
+- Test with wrong passwords
+- Test with unauthorized addresses
+- Test with restricted operations
+
+NOTES
+=====
+
+- Replace placeholder values like [ALGORAND_ADDRESS], [MNEMONIC], etc. with actual test data
+- Always use testnet for testing
+- Keep test data separate from production data
+- Monitor server logs during testing
+- Test both success and failure scenarios

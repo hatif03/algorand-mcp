@@ -98,6 +98,13 @@ npm run dev
 npm test
 ```
 
+For manual testing of individual tools, see:
+
+- [TEST_QUERIES.md](TEST_QUERIES.md) - Markdown format with detailed descriptions
+- [TEST_QUERIES.txt](TEST_QUERIES.txt) - Plain text format for easy copy-paste
+
+Both files contain comprehensive test queries for all 47+ tools.
+
 ### MCP Client Configuration
 
 #### For VSCode with MCP Extension
@@ -272,6 +279,8 @@ The project includes a `.vscode/mcp.json` configuration file for debugging withi
 ├── ENHANCED_FEATURES.md           # Detailed feature documentation
 ├── MCP_SETUP.md                   # MCP server setup instructions
 ├── TESTING.md                     # Testing guidelines
+├── TEST_QUERIES.md                # Manual testing queries for all tools (markdown)
+├── TEST_QUERIES.txt               # Manual testing queries for all tools (plain text)
 └── README.md                      # This file
 ```
 
