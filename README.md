@@ -1,6 +1,8 @@
-# Algorand MCP Server v3.0.0
+# Algorand MCP Server v1.0.0
 
 A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algorand blockchain development, including account management, asset operations, smart contracts, API integration, and advanced transaction capabilities.
+
+> **Note**: This is version 1 of the Algorand MCP Server, providing a complete foundation for Algorand development with AI assistants.
 
 ## Overview
 
@@ -127,6 +129,40 @@ Add to your Claude Desktop configuration:
   }
 }
 ```
+
+#### For Cursor IDE
+
+Add to your Cursor settings (Cursor > Preferences > Features > Model Context Protocol):
+
+```json
+{
+  "mcpServers": {
+    "algorand-mcp-server": {
+      "command": "node",
+      "args": ["path/to/your/project/dist/index.js"],
+      "env": {
+        "ALGORAND_NETWORK": "testnet",
+        "ALGORAND_TOKEN": "your_api_token",
+        "ALGORAND_ALGOD": "https://testnet-api.algonode.cloud",
+        "ALGORAND_INDEXER": "https://testnet-idx.algonode.cloud",
+        "NFD_API_URL": "https://api.nf.domains"
+      }
+    }
+  }
+}
+```
+
+**Note**: Replace `path/to/your/project/dist/index.js` with the actual path to your compiled server file.
+
+#### Cursor IDE Usage Tips
+
+1. **Environment Variables**: The `env` section in the Cursor configuration allows you to set environment variables directly in the MCP server configuration.
+
+2. **Restart Required**: After updating the MCP configuration in Cursor, restart the application for changes to take effect.
+
+3. **Debugging**: Use the Cursor developer tools to monitor MCP server communication and troubleshoot any issues.
+
+4. **Tool Discovery**: Once configured, you can access all 47+ Algorand tools directly through Cursor's AI assistant interface.
 
 ### For VS Code Debugging
 
