@@ -1,6 +1,6 @@
 {
   "name": "algorand-mcp",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "MCP server to interact with the ALgorand Blockchain",
   "license": "ISC",
   "author": "",
@@ -9,14 +9,11 @@
     "algorand-mcp-server": "dist/index.js"
   },
   "main": "dist/index.js",
- "scripts": {
+  "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:enhanced": "node dist/index-enhanced.js",
     "dev": "tsc && node dist/index.js",
-    "dev:enhanced": "tsc && node dist/index-enhanced.js",
     "test": "node test/test-server.mjs",
-    "test:enhanced": "node test/test-enhanced-server.mjs",
     "clean": "rimraf dist"
   },
   "keywords": [
@@ -29,16 +26,19 @@
     "@types/node": "^24.2.0",
     "@types/node-fetch": "^2.6.13",
     "@types/qrcode": "^1.5.5",
+    "rimraf": "^6.0.1",
     "typescript": "^5.9.2"
   },
   "dependencies": {
     "@algorandfoundation/algokit-utils": "^9.1.2",
     "@modelcontextprotocol/sdk": "^1.17.1",
+    "@qdrant/js-client-rest": "^1.15.1",
     "algo-msgpack-with-bigint": "^2.1.1",
     "algosdk": "^3.4.0",
     "dotenv": "^17.2.1",
     "hi-base32": "^0.5.1",
     "node-fetch": "^2.7.0",
+    "openai": "^5.20.3",
     "qrcode": "^1.5.4",
     "tweetnacl": "^1.0.3",
     "zod": "^3.25.76"
