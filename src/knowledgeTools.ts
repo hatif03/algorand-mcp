@@ -1,68 +1,94 @@
 import { z } from 'zod';
-
+import { QdrantClient } from '@qdrant/js-client-rest';
+import OpenAI from 'openai';
+import dotenv from 'dotenv';
 /**
  * Knowledge tools for Algorand documentation access
  * Provides access to Algorand documentation and guides
  */
 
 export const KnowledgeTools = [
+    // {
+    //     name: 'get_knowledge_doc',
+    //     description: 'Get markdown content for specified knowledge documents',
+    //     inputSchema: {
+    //         type: 'object' as const,
+    //         properties: {
+    //             documents: {
+    //                 type: 'array',
+    //                 items: {
+    //                     type: 'string'
+    //                 },
+    //                 description: 'Array of document keys (e.g. ["ARCs:specs:arc-0020.md"])'
+    //             }
+    //         },
+    //         required: ['documents']
+    //     }
+    // },
+    // {
+    //     name: 'list_knowledge_docs',
+    //     description: 'List available knowledge documents by category',
+    //     inputSchema: {
+    //         type: 'object' as const,
+    //         properties: {
+    //             prefix: {
+    //                 type: 'string',
+    //                 description: 'Optional prefix to filter documents',
+    //                 default: ''
+    //             }
+    //         }
+    //     }
+    // },
+    // {
+    //     name: 'search_knowledge_docs',
+    //     description: 'Search available knowledge documents by category prefix',
+    //     inputSchema: {
+    //         type: 'object' as const,
+    //         properties: {
+    //             query: {
+    //                 type: 'string',
+    //                 description: 'Search query string'
+    //             }
+    //         },
+    //         required: ['query']
+    //     }
+    // },
+    // {
+    //     name: 'get_algorand_guide',
+    //     description: 'Get comprehensive Algorand development guide',
+    //     inputSchema: {
+    //         type: 'object' as const,
+    //         properties: {
+    //             section: {
+    //                 type: 'string',
+    //                 description: 'Optional section to focus on (e.g., "getting-started", "smart-contracts", "assets")',
+    //                 optional: true
+    //             }
+    //         }
+    //     }
+    // },
     {
-        name: 'get_knowledge_doc',
-        description: 'Get markdown content for specified knowledge documents',
-        inputSchema: {
-            type: 'object' as const,
-            properties: {
-                documents: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    },
-                    description: 'Array of document keys (e.g. ["ARCs:specs:arc-0020.md"])'
-                }
-            },
-            required: ['documents']
-        }
-    },
-    {
-        name: 'list_knowledge_docs',
-        description: 'List available knowledge documents by category',
-        inputSchema: {
-            type: 'object' as const,
-            properties: {
-                prefix: {
-                    type: 'string',
-                    description: 'Optional prefix to filter documents',
-                    default: ''
-                }
-            }
-        }
-    },
-    {
-        name: 'search_knowledge_docs',
-        description: 'Search available knowledge documents by category prefix',
+        name: 'search_algorand_docs',
+        description: 'Semantic search through Algorand documentation using AI embeddings',
         inputSchema: {
             type: 'object' as const,
             properties: {
                 query: {
                     type: 'string',
-                    description: 'Search query string'
+                    description: 'Natural language search query to find relevant documentation'
+                },
+                limit: {
+                    type: 'number',
+                    description: 'Maximum number of results to return (default: 5)',
+                    optional: true
+                },
+                category: {
+                    type: 'string',
+                    description: 'Optional category filter (e.g., "Smart Contracts", "Getting Started", "AlgoKit")',
+                    optional: true
                 }
             },
             required: ['query']
-        }
-    },
-    {
-        name: 'get_algorand_guide',
-        description: 'Get comprehensive Algorand development guide',
-        inputSchema: {
-            type: 'object' as const,
-            properties: {
-                section: {
-                    type: 'string',
-                    description: 'Optional section to focus on (e.g., "getting-started", "smart-contracts", "assets")',
-                    optional: true
-                }
-            }
         }
     }
 ];
@@ -84,12 +110,59 @@ export const GetAlgorandGuideSchema = z.object({
     section: z.string().optional()
 });
 
+export const SearchAlgorandDocsSchema = z.object({
+    query: z.string(),
+    limit: z.number().optional(),
+    category: z.string().optional()
+});
+
 // Knowledge Service class
 export class KnowledgeService {
     private knowledgeBase: Map<string, string> = new Map();
+    private qdrantClient: QdrantClient | null = null;
+    private openaiClient: OpenAI | null = null;
+    private collectionName = 'algorand';
 
     constructor() {
         this.initializeKnowledgeBase();
+        this.initializeClients();
+    }
+
+    /**
+     * Initialize Qdrant and OpenAI clients
+     */
+    private initializeClients(): void {
+        try {
+            const qdrantUrl = process.env.QDRANT_URL;
+            const qdrantApiKey = process.env.QDRANT_API_KEY;
+            const openaiApiKey = process.env.OPENAI_API_KEY;
+
+            if (qdrantUrl && qdrantApiKey) {
+                this.qdrantClient = new QdrantClient({
+                    url: qdrantUrl,
+                    apiKey: qdrantApiKey,
+                });
+                console.log('Qdrant client initialized successfully');
+            } else {
+                console.warn('Qdrant client not initialized: Missing QDRANT_URL or QDRANT_API_KEY environment variables');
+            }
+
+            if (openaiApiKey) {
+                this.openaiClient = new OpenAI({
+                    apiKey: openaiApiKey,
+                });
+                console.log('OpenAI client initialized successfully');
+            } else {
+                console.warn('OpenAI client not initialized: Missing OPENAI_API_KEY environment variable');
+            }
+
+            if (!this.qdrantClient || !this.openaiClient) {
+                console.info('Semantic search will use fallback local knowledge base search');
+            }
+        } catch (error) {
+            console.error('Failed to initialize semantic search clients:', error);
+            console.info('Will use fallback local knowledge base search');
+        }
     }
 
     /**
@@ -204,6 +277,218 @@ ${this.knowledgeBase.get('security')}
         `.trim();
 
         return { content: fullGuide };
+    }
+
+    /**
+     * Semantic search through Algorand documentation
+     */
+    async searchAlgorandDocs(
+        query: string, 
+        limit: number = 5, 
+        category?: string
+    ): Promise<{
+        results: Array<{
+            content: string;
+            metadata: {
+                filename: string;
+                title: string;
+                category: string;
+                chunk_index: number;
+                total_chunks: number;
+                file_path: string;
+            };
+            score: number;
+        }>;
+        total_found: number;
+        query_used: string;
+    }> {
+        if (!this.qdrantClient || !this.openaiClient) {
+            // Fallback to local knowledge base search if clients not available
+            console.warn('Semantic search not available, falling back to local knowledge base search');
+            return this.fallbackSearch(query, limit, category);
+        }
+
+        try {
+            // Generate embedding for the query
+            const embeddingResponse = await this.openaiClient.embeddings.create({
+                input: query,
+                model: 'text-embedding-3-small'
+            });
+
+            const queryEmbedding = embeddingResponse.data[0]?.embedding;
+            if (!queryEmbedding) {
+                throw new Error('Failed to generate embedding for query');
+            }
+
+            // Prepare search filter
+            let filter: any = undefined;
+            if (category) {
+                filter = {
+                    must: [
+                        {
+                            key: 'category',
+                            match: {
+                                value: category
+                            }
+                        }
+                    ]
+                };
+            }
+
+            // Search in Qdrant
+            const searchResult = await this.qdrantClient.search(this.collectionName, {
+                vector: queryEmbedding,
+                limit: limit,
+                filter: filter,
+                with_payload: true,
+                with_vector: false
+            });
+
+            // Format results
+            const results = searchResult.map(point => ({
+                content: point.payload?.content as string || '',
+                metadata: {
+                    filename: point.payload?.filename as string || '',
+                    title: point.payload?.title as string || '',
+                    category: point.payload?.category as string || '',
+                    chunk_index: point.payload?.chunk_index as number || 0,
+                    total_chunks: point.payload?.total_chunks as number || 1,
+                    file_path: point.payload?.file_path as string || ''
+                },
+                score: point.score || 0
+            }));
+
+            return {
+                results,
+                total_found: results.length,
+                query_used: query
+            };
+
+        } catch (error) {
+            console.error('Error in semantic search:', error);
+            console.warn('Falling back to local knowledge base search due to semantic search error');
+            return this.fallbackSearch(query, limit, category);
+        }
+    }
+
+    /**
+     * Fallback search using local knowledge base
+     */
+    private fallbackSearch(
+        query: string, 
+        limit: number = 5, 
+        category?: string
+    ): {
+        results: Array<{
+            content: string;
+            metadata: {
+                filename: string;
+                title: string;
+                category: string;
+                chunk_index: number;
+                total_chunks: number;
+                file_path: string;
+            };
+            score: number;
+        }>;
+        total_found: number;
+        query_used: string;
+    } {
+        const queryLower = query.toLowerCase();
+        const results: Array<{
+            content: string;
+            metadata: {
+                filename: string;
+                title: string;
+                category: string;
+                chunk_index: number;
+                total_chunks: number;
+                file_path: string;
+            };
+            score: number;
+        }> = [];
+
+        // Search through local knowledge base
+        for (const [key, content] of this.knowledgeBase.entries()) {
+            // Skip if category filter doesn't match
+            if (category && !key.toLowerCase().includes(category.toLowerCase())) {
+                continue;
+            }
+
+            // Simple text matching for relevance scoring
+            const contentLower = content.toLowerCase();
+            let score = 0;
+            
+            // Check for exact phrase matches
+            if (contentLower.includes(queryLower)) {
+                score += 0.8;
+            }
+            
+            // Check for individual word matches
+            const queryWords = queryLower.split(/\s+/).filter(word => word.length > 2);
+            const matchedWords = queryWords.filter(word => contentLower.includes(word));
+            score += (matchedWords.length / queryWords.length) * 0.6;
+            
+            // Check for title/key matches
+            if (key.toLowerCase().includes(queryLower)) {
+                score += 0.4;
+            }
+
+            if (score > 0) {
+                results.push({
+                    content: content.substring(0, 500) + (content.length > 500 ? '...' : ''),
+                    metadata: {
+                        filename: `${key}.md`,
+                        title: this.getTitleFromKey(key),
+                        category: this.getCategoryFromKey(key),
+                        chunk_index: 0,
+                        total_chunks: 1,
+                        file_path: `docs/${key}.md`
+                    },
+                    score: Math.min(score, 1.0)
+                });
+            }
+        }
+
+        // Sort by score and limit results
+        results.sort((a, b) => b.score - a.score);
+        const limitedResults = results.slice(0, limit);
+
+        return {
+            results: limitedResults,
+            total_found: limitedResults.length,
+            query_used: query
+        };
+    }
+
+    /**
+     * Get a human-readable title from a knowledge base key
+     */
+    private getTitleFromKey(key: string): string {
+        const titleMap: Record<string, string> = {
+            'getting-started': 'Getting Started with Algorand',
+            'smart-contracts': 'Smart Contracts on Algorand',
+            'assets': 'Algorand Standard Assets (ASAs)',
+            'transactions': 'Algorand Transactions',
+            'api': 'Algorand API Reference',
+            'security': 'Security Best Practices'
+        };
+        return titleMap[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    /**
+     * Get a category from a knowledge base key
+     */
+    private getCategoryFromKey(key: string): string {
+        const categoryMap: Record<string, string> = {
+            'getting-started': 'Getting Started',
+            'smart-contracts': 'Smart Contracts',
+            'assets': 'Assets',
+            'transactions': 'Transactions',
+            'api': 'API Reference',
+            'security': 'Security'
+        };
+        return categoryMap[key] || 'General';
     }
 
     private getGettingStartedGuide(): string {

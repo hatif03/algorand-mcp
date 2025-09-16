@@ -1302,6 +1302,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 };
             }
 
+            case 'search_algorand_docs': {
+                const parsed = z.object({
+                    query: z.string(),
+                    limit: z.number().optional(),
+                    category: z.string().optional()
+                }).parse(args);
+                const result = await knowledgeService.searchAlgorandDocs(
+                    parsed.query,
+                    parsed.limit,
+                    parsed.category
+                );
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Algorand Documentation Search Results for "${parsed.query}":\n\nFound ${result.total_found} results:\n\n${result.results.map((r, i) => `${i + 1}. ${r.metadata.title} (${r.metadata.category})\n   Score: ${r.score.toFixed(3)}\n   Content: ${r.content.substring(0, 200)}...\n   File: ${r.metadata.file_path}\n`).join('\n')}`,
+                        },
+                    ],
+                };
+            }
+
             default:
                 return {
                     content: [
