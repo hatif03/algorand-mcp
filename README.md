@@ -1,73 +1,83 @@
-# MCP Server with Algorand Integration
+# Algorand MCP Server v3.0.0
 
-This server provides blockchain transaction capabilities for the Algorand network along with general utility tools.
+A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algorand blockchain development, including account management, asset operations, smart contracts, API integration, and advanced transaction capabilities.
 
 ## Overview
 
-This MCP server provides the following tools to AI assistants:
+This MCP server provides a complete suite of tools for AI assistants to interact with the Algorand blockchain, from basic operations to advanced smart contract development and deployment.
 
-### General Tools
-- **echo**: Echo back any message (useful for testing connectivity)
-- **calculate**: Perform basic mathematical calculations
-- **get_current_time**: Get the current time in any timezone
+### Tool Categories
 
-### Algorand Blockchain Tools
-- **generate_algorand_account**: Generate a new Algorand account with address and mnemonic
-- **get_account_info**: Get account information including balance and assets
-- **send_payment**: Send Algo payment transaction
-- **create_asset**: Create a new Algorand Standard Asset (ASA)
-- **opt_in_to_asset**: Opt into an Algorand Standard Asset
-- **transfer_asset**: Transfer an Algorand Standard Asset
-- **get_asset_info**: Get information about an asset
-- **get_transaction**: Get transaction details by transaction ID
+- **Basic Tools** (4 tools): Echo, calculations, time, testnet funding
+- **Core Algorand Tools** (8 tools): Account generation, payments, assets, transactions
+- **Utility Tools** (10 tools): Address validation, encoding, TEAL compilation, cryptography
+- **API Integration Tools** (12 tools): Algod, Indexer, and NFD API access
+- **Advanced Transaction Tools** (8 tools): Atomic groups, smart contracts, key registration
+- **ARC-26 Tools** (2 tools): URI generation and QR codes
+- **Knowledge Tools** (1 tool): Semantic search through Algorand documentation
+- **Wallet Management** (2 tools): Secure wallet storage and retrieval
+
+**Total: 47+ tools** for comprehensive Algorand development
 
 ## Security Features
 
 ### Mnemonic Phrase Protection
+
 - **Encryption**: Built-in AES-256-GCM encryption for mnemonic phrases
 - **Secure Storage**: Methods for encrypting/decrypting wallet credentials
 - **Memory Safety**: Sensitive data is handled securely and not logged
 
 ### Network Configuration
+
 - **Testnet Default**: Safely defaults to Algorand testnet
 - **Environment-based**: Network configuration through environment variables
 - **Production Ready**: Supports mainnet for production use
 
 ## Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - TypeScript
+- Algorand testnet account (for testing)
 
 ## Installation
 
 1. Clone or download this project
 2. Install dependencies:
+
    ```bash
    npm install
    ```
-3. Copy environment configuration:
+
+3. Create environment configuration:
+
    ```bash
-   cp .env.example .env
+   # Create .env file with the following variables:
+   ALGORAND_NETWORK=testnet
+   ALGORAND_TOKEN=your_api_token
+   ALGORAND_ALGOD=https://testnet-api.algonode.cloud
+   ALGORAND_INDEXER=https://testnet-idx.algonode.cloud
+   NFD_API_URL=https://api.nf.domains
+   
+   # Optional: For semantic search features
+   QDRANT_URL=your_qdrant_url
+   QDRANT_API_KEY=your_qdrant_api_key
+   OPENAI_API_KEY=your_openai_api_key
    ```
-4. Configure your Algorand network in `.env` (defaults to testnet)
 
-## Development
+4. Build the project:
 
-### Building the Project
+   ```bash
+   npm run build
+   ```
 
-```bash
-npm run build
-```
+## Usage
 
 ### Running the Server
 
 ```bash
-# Basic server
+# Start the MCP server
 npm start
-
-# Enhanced server with 44+ tools
-npm run start:enhanced
 ```
 
 ### Development Mode
@@ -75,26 +85,37 @@ npm run start:enhanced
 For development with automatic rebuilding:
 
 ```bash
-# Basic server
+# Build and run in development mode
 npm run dev
-
-# Enhanced server
-npm run dev:enhanced
 ```
 
 ### Testing
 
 ```bash
-# Test basic server
+# Test the server functionality
 npm test
-
-# Test enhanced server
-npm run test:enhanced
 ```
 
-## Configuration
+### MCP Client Configuration
 
-### For VSCode
+#### For VSCode with MCP Extension
+
+Add to your VSCode settings:
+
+```json
+{
+  "mcpServers": {
+    "algorand-mcp-server": {
+      "command": "node",
+      "args": ["path/to/your/project/dist/index.js"]
+    }
+  }
+}
+```
+
+#### For Claude Desktop
+
+Add to your Claude Desktop configuration:
 
 ```json
 {
@@ -113,87 +134,142 @@ The project includes a `.vscode/mcp.json` configuration file for debugging withi
 
 ## Available Tools
 
-### Basic Tools
+### Basic Tools (4 tools)
+
 - **echo**: Echo back the provided message
 - **calculate**: Perform basic mathematical calculations  
 - **get_current_time**: Get the current time in a specified timezone
 - **fund_testnet**: Fund an Algorand testnet account using the official faucet
 
-### Algorand Blockchain Tools
+### Core Algorand Tools (8 tools)
+
 - **generate_algorand_account**: Generate a new Algorand account with address and mnemonic
 - **get_account_info**: Get account information including balance and assets
-- **send_payment**: Send Algo payment transaction
+- **send_payment**: Send Algo payment transaction (WARNING: Requires mnemonic phrase)
 - **create_asset**: Create a new Algorand Standard Asset (ASA)
 - **opt_in_to_asset**: Opt into an Algorand Standard Asset
 - **transfer_asset**: Transfer an Algorand Standard Asset
-- **get_asset_info**: Get information about an asset
+- **get_asset_info**: Get information about an Algorand Standard Asset
 - **get_transaction**: Get transaction details by transaction ID
 
-### Enhanced Features (44+ Tools)
-This server now includes advanced features from the remote MCP server:
+### Wallet Management (2 tools)
 
-#### Advanced Utility Tools (10 tools)
-- **validate_address**: Validate Algorand addresses
-- **encode_address**: Convert public key to address
-- **decode_address**: Convert address to public key
-- **get_application_address**: Get smart contract address
-- **verify_bytes**: Verify cryptographic signatures
-- **sign_bytes**: Sign data with private key
-- **compile_teal**: Compile TEAL smart contract code
-- **disassemble_teal**: Disassemble TEAL bytecode
-- **encode_obj**: Encode objects to msgpack
-- **decode_obj**: Decode msgpack to objects
+- **store_wallet**: Securely store a wallet with encrypted mnemonic
+- **load_wallet**: Load a stored wallet and return the address
 
-#### API Integration Tools (12 tools)
-- **Algod API**: Account info, transactions, assets, applications
-- **Indexer API**: Advanced search and lookup capabilities
-- **NFD API**: Name service integration
+### Utility Tools (10 tools)
 
-#### Advanced Transaction Tools (8 tools)
-- **Atomic Groups**: Create, sign, and submit transaction groups
-- **Smart Contracts**: Deploy, call, and manage applications
-- **Key Registration**: Participation key management
-- **Asset Freeze**: Freeze/unfreeze asset operations
+- **validate_address**: Check if an Algorand address is valid
+- **encode_address**: Encode a public key to an Algorand address
+- **decode_address**: Decode an Algorand address to a public key
+- **get_application_address**: Get the address for a given application ID
+- **verify_bytes**: Verify a signature against bytes with an Algorand address
+- **sign_bytes**: Sign bytes with a secret key
+- **compile_teal**: Compile TEAL source code to bytecode
+- **disassemble_teal**: Disassemble TEAL bytecode into source code
+- **encode_obj**: Encode an object to msgpack format
+- **decode_obj**: Decode msgpack bytes to an object
 
-See [ENHANCED_FEATURES.md](ENHANCED_FEATURES.md) for complete documentation.
+### API Integration Tools (12 tools)
+
+#### Algod API (5 tools)
+
+- **algod_get_account_info**: Get current account balance, assets, and auth address from algod
+- **algod_get_transaction_info**: Get transaction details by transaction ID from algod
+- **algod_get_asset_info**: Get asset details from algod
+- **algod_get_application_info**: Get application details from algod
+- **algod_get_pending_transactions**: Get pending transactions from algod mempool
+
+#### Indexer API (5 tools)
+
+- **indexer_lookup_account_by_id**: Get account information from indexer
+- **indexer_lookup_asset_by_id**: Get asset information from indexer
+- **indexer_lookup_transaction_by_id**: Get transaction details from indexer
+- **indexer_search_for_accounts**: Search for accounts with various criteria
+- **indexer_search_for_transactions**: Search for transactions with various criteria
+
+#### NFD API (3 tools)
+
+- **nfd_get_nfd**: Get NFD domain information by name
+- **nfd_get_nfds_for_address**: Get all NFD domains owned by an address
+- **nfd_search_nfds**: Search for NFD domains
+
+### Advanced Transaction Tools (8 tools)
+
+- **create_atomic_group**: Create an atomic transaction group from multiple transactions
+- **sign_atomic_group**: Sign an atomic transaction group
+- **submit_atomic_group**: Submit a signed atomic transaction group to the network
+- **create_application**: Create a new smart contract application on Algorand
+- **call_application**: Call a smart contract application on Algorand
+- **optin_application**: Opt-in to an Algorand application
+- **closeout_application**: Close out from an Algorand application
+- **create_key_registration_transaction**: Create a key registration transaction for participation
+- **freeze_asset**: Freeze or unfreeze an asset for an account
+
+### ARC-26 Tools (2 tools)
+
+- **generate_algorand_uri**: Generate a URI following the Algorand ARC-26 specification
+- **generate_algorand_qrcode**: Generate a URI and QRCode following the Algorand ARC-26 specification
+
+### Knowledge Tools (1 tool)
+
+- **search_algorand_docs**: Semantic search through Algorand documentation using AI embeddings
 
 ## Project Structure
 
-```
+```text
 ├── src/
-│   └── index.ts          # Main server implementation
-├── dist/                 # Compiled JavaScript output
+│   ├── index.ts                    # Main server implementation
+│   ├── algorand.ts                 # Core Algorand blockchain operations
+│   ├── utilityTools.ts             # Address validation, encoding, TEAL compilation
+│   ├── apiTools.ts                 # Algod, Indexer, and NFD API integration
+│   ├── advancedTransactionTools.ts # Atomic groups, smart contracts, key registration
+│   ├── arc26Tools.ts              # ARC-26 URI generation and QR codes
+│   └── knowledgeTools.ts           # Semantic search and documentation access
+├── dist/                          # Compiled JavaScript output
 ├── .vscode/
-│   └── mcp.json         # VS Code MCP configuration
+│   └── mcp.json                   # VS Code MCP configuration
 ├── .github/
-│   └── copilot-instructions.md  # GitHub Copilot instructions
-├── package.json          # Node.js package configuration
-├── tsconfig.json         # TypeScript configuration
-└── README.md            # This file
+│   └── copilot-instructions.md    # GitHub Copilot instructions
+├── package.json                   # Node.js package configuration (v3.0.0)
+├── tsconfig.json                  # TypeScript configuration
+├── ENHANCED_FEATURES.md           # Detailed feature documentation
+├── MCP_SETUP.md                   # MCP server setup instructions
+├── TESTING.md                     # Testing guidelines
+└── README.md                      # This file
 ```
 
 ## Development Guide
 
+### Modular Architecture
+
+The server is organized into modular tool categories:
+
+- **`algorand.ts`**: Core blockchain operations (accounts, payments, assets)
+- **`utilityTools.ts`**: Address validation, encoding, TEAL compilation
+- **`apiTools.ts`**: Algod, Indexer, and NFD API integration
+- **`advancedTransactionTools.ts`**: Atomic groups, smart contracts, key registration
+- **`arc26Tools.ts`**: ARC-26 URI generation and QR codes
+- **`knowledgeTools.ts`**: Semantic search and documentation access
+
 ### Adding New Tools
 
-1. Define the tool schema in the `TOOLS` array
-2. Create a Zod schema for input validation
-3. Add a case in the `CallToolRequestSchema` handler
-4. Implement the tool logic with proper error handling
+1. **Choose the appropriate module** for your tool category
+2. **Define the tool schema** in the module's tools array
+3. **Create a Zod schema** for input validation
+4. **Implement the service method** in the corresponding service class
+5. **Add the tool handler** in `index.ts`
+6. **Update the module exports** to include the new tool
 
 ### Example Tool Implementation
 
 ```typescript
-const MyToolArgsSchema = z.object({
-  input: z.string(),
-});
-
-// Add to TOOLS array
-{
+// In utilityTools.ts
+export const MyTool = {
   name: 'my_tool',
   description: 'Description of what the tool does',
   inputSchema: {
-    type: 'object',
+    type: 'object' as const,
     properties: {
       input: {
         type: 'string',
@@ -202,17 +278,29 @@ const MyToolArgsSchema = z.object({
     },
     required: ['input'],
   },
+};
+
+// Add to UtilityTools array
+export const UtilityTools = [
+  // ... existing tools
+  MyTool,
+];
+
+// In utilityTools.ts service class
+async myToolMethod(input: string): Promise<{ result: string }> {
+  // Implement tool logic here
+  return { result: `Processed: ${input}` };
 }
 
-// Add to request handler
+// In index.ts
 case 'my_tool': {
-  const parsed = MyToolArgsSchema.parse(args);
-  // Implement tool logic here
+  const parsed = z.object({ input: z.string() }).parse(args);
+  const result = await utilityService.myToolMethod(parsed.input);
   return {
     content: [
       {
         type: 'text',
-        text: `Result: ${parsed.input}`,
+        text: `Result: ${result.result}`,
       },
     ],
   };
@@ -221,9 +309,20 @@ case 'my_tool': {
 
 ## Security Considerations
 
-- Input validation is performed using Zod schemas
-- The `calculate` tool uses `eval()` for demonstration purposes only - in production, use a safer math evaluation library
-- Always validate and sanitize inputs before processing
+- **Input Validation**: All tools use Zod schemas for robust input validation
+- **Mnemonic Protection**: Built-in AES-256-GCM encryption for wallet storage
+- **Network Safety**: Defaults to testnet for safe development
+- **Error Handling**: Comprehensive error handling prevents sensitive data leakage
+- **Memory Safety**: Sensitive data is handled securely and not logged
+- **Production Ready**: Supports mainnet with proper environment configuration
+
+### Security Best Practices
+
+- Never commit mnemonic phrases or private keys to version control
+- Use environment variables for sensitive configuration
+- Test thoroughly on testnet before mainnet deployment
+- Implement proper access controls in production
+- Monitor for unusual activity and implement rate limiting
 
 ## Contributing
 
@@ -236,7 +335,47 @@ case 'my_tool': {
 
 ISC License - see package.json for details
 
+## Key Features
+
+### 🔐 Security First
+
+- AES-256-GCM encryption for wallet storage
+- Comprehensive input validation with Zod schemas
+- Testnet-first approach for safe development
+- Production-ready mainnet support
+
+### 🚀 Comprehensive Tool Suite
+
+- **47+ tools** covering all aspects of Algorand development
+- Modular architecture for easy maintenance and extension
+- Real-time blockchain interaction capabilities
+- Advanced smart contract deployment and management
+
+### 🔗 Full API Integration
+
+- Direct Algod API access for real-time data
+- Indexer API for advanced search and analytics
+- NFD (Name Service) integration for human-readable addresses
+- Semantic search through Algorand documentation
+
+### 🛠️ Developer Experience
+
+- TypeScript for type safety and better development experience
+- Comprehensive error handling and logging
+- Easy-to-use MCP client configuration
+- Extensive documentation and examples
+
+### 📱 Modern Standards
+
+- ARC-26 compliant URI generation
+- QR code generation for mobile wallet integration
+- Atomic transaction groups for complex operations
+- Smart contract deployment and interaction
+
 ## Resources
 
 - [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
 - [MCP SDK Reference](https://github.com/modelcontextprotocol/typescript-sdk)
+- [Algorand Developer Portal](https://developer.algorand.org/)
+- [Algorand SDK Documentation](https://algorand.github.io/js-algorand-sdk/)
+- [ARC-26 Specification](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0026.md)
