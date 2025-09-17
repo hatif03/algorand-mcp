@@ -8,8 +8,6 @@ A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algo
 
 ## 🎥 Project Demo
 
-<!-- markdownlint-disable MD033 -->
-<div align="center">
   <iframe
     width="560"
     height="315"
