@@ -32,6 +32,7 @@
   "dependencies": {
     "@algorandfoundation/algokit-utils": "^9.1.2",
     "@modelcontextprotocol/sdk": "^1.17.1",
+    "@perawallet/swap": "^1.0.0-beta.2",
     "@qdrant/js-client-rest": "^1.15.1",
     "algo-msgpack-with-bigint": "^2.1.1",
     "algosdk": "^3.4.0",

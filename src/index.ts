@@ -12,6 +12,7 @@ import { ApiTools, ApiService } from './apiTools.js';
 import { AdvancedTransactionTools, AdvancedTransactionService } from './advancedTransactionTools.js';
 import { Arc26Tools, Arc26Service } from './arc26Tools.js';
 import { KnowledgeTools, KnowledgeService } from './knowledgeTools.js';
+import { SwapTools, SwapService } from './swapTools.js';
 import * as dotenv from 'dotenv';
 import algosdk from 'algosdk';
 
@@ -115,6 +116,7 @@ const apiService = new ApiService(algodClient, indexerClient, process.env.NFD_AP
 const advancedTransactionService = new AdvancedTransactionService(algodClient);
 const arc26Service = new Arc26Service();
 const knowledgeService = new KnowledgeService();
+const swapService = new SwapService((process.env.ALGORAND_NETWORK as 'testnet' | 'mainnet') || 'testnet');
 
 // Simple in-memory wallet storage
 const walletStorage = new Map<string, { encryptedMnemonic: string; iv: string; address: string }>();
@@ -402,6 +404,9 @@ const ALL_TOOLS: Tool[] = [
     
     // Add all knowledge tools
     ...KnowledgeTools,
+    
+    // Add all swap tools
+    ...SwapTools,
 ];
 
 // Create server instance
@@ -1318,6 +1323,103 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                         {
                             type: 'text',
                             text: `Algorand Documentation Search Results for "${parsed.query}":\n\nFound ${result.total_found} results:\n\n${result.results.map((r, i) => `${i + 1}. ${r.metadata.title} (${r.metadata.category})\n   Score: ${r.score.toFixed(3)}\n   Content: ${r.content.substring(0, 200)}...\n   File: ${r.metadata.file_path}\n`).join('\n')}`,
+                        },
+                    ],
+                };
+            }
+
+            // Swap tools
+            case 'get_swap_quote': {
+                const parsed = z.object({
+                    fromAssetId: z.number(),
+                    toAssetId: z.number(),
+                    amount: z.string(),
+                    walletAddress: z.string(),
+                    slippage: z.string().optional()
+                }).parse(args);
+                const result = await swapService.getSwapQuote(
+                    parsed.fromAssetId,
+                    parsed.toAssetId,
+                    parsed.amount,
+                    parsed.walletAddress,
+                    parsed.slippage
+                );
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Swap Quote Retrieved!\nQuote ID: ${result.quote_id}\nFrom Asset: ${parsed.fromAssetId}\nTo Asset: ${parsed.toAssetId}\nAmount In: ${parsed.amount}\nAmount Out: ${result.amount_out}\nPrice Impact: ${result.price_impact}%\nSlippage: ${parsed.slippage || '0.005'}\nProvider: ${result.provider}\n\n⚠️ Use the Quote ID to execute the swap with execute_swap tool.`,
+                        },
+                    ],
+                };
+            }
+
+            case 'execute_swap': {
+                const parsed = z.object({
+                    quoteId: z.string(),
+                    mnemonic: z.string()
+                }).parse(args);
+                const result = await swapService.executeSwap(parsed.quoteId, parsed.mnemonic);
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Swap Executed Successfully!\nTransaction ID: ${result.txId}\nConfirmed Round: ${result.confirmedRound}\n\n🎉 Your swap has been completed on the Algorand blockchain!`,
+                        },
+                    ],
+                };
+            }
+
+            case 'search_swap_assets': {
+                const parsed = z.object({
+                    query: z.string()
+                }).parse(args);
+                const result = await swapService.searchSwapAssets(parsed.query);
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Asset Search Results for "${parsed.query}":\n\n${result.map((asset, i) => `${i + 1}. ${asset.name} (${asset.unit_name})\n   Asset ID: ${asset.asset_id}\n   Total Supply: ${asset.total}\n   Decimals: ${asset.decimals}\n`).join('\n')}`,
+                        },
+                    ],
+                };
+            }
+
+            case 'get_available_swap_assets': {
+                const parsed = z.object({
+                    assetInId: z.number()
+                }).parse(args);
+                const result = await swapService.getAvailableSwapAssets(parsed.assetInId);
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Available Swap Assets for Asset ID ${parsed.assetInId}:\n\n${result.map((asset, i) => `${i + 1}. ${asset.name} (${asset.unit_name})\n   Asset ID: ${asset.asset_id}\n   Total Supply: ${asset.total}\n   Decimals: ${asset.decimals}\n`).join('\n')}`,
+                        },
+                    ],
+                };
+            }
+
+            case 'get_swap_asset_info': {
+                const parsed = z.object({
+                    assetId: z.number()
+                }).parse(args);
+                const result = await swapService.getSwapAsset(parsed.assetId);
+                if (!result) {
+                    return {
+                        content: [
+                            {
+                                type: 'text',
+                                text: `Asset ID ${parsed.assetId} not found or not available for swapping.`,
+                            },
+                        ],
+                    };
+                }
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Swap Asset Information:\nAsset ID: ${result.asset_id}\nName: ${result.name}\nUnit Name: ${result.unit_name}\nTotal Supply: ${result.total}\nDecimals: ${result.decimals}\nCreator: ${result.creator}\nURL: ${result.url || 'N/A'}`,
                         },
                     ],
                 };
