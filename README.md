@@ -1,8 +1,10 @@
-# Algorand MCP Server v3.0.0
+# Algorand MCP Server v0.1.1
+
+![MCP Server](https://github.com/hatif03/algorand-mcp/blob/main/assets/cursor-screenshot.png)
 
 A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algorand blockchain development, including account management, asset operations, smart contracts, API integration, swap functionality, and advanced transaction capabilities.
 
-> **⭐ New in v3.0**: Added swap functionality with Pera Swap integration and a complete Raycast extension for native macOS integration!
+> **⭐ New in v0.1**: Added swap functionality with Pera Swap integration and a complete Raycast extension for native macOS integration!
 
 ## 🚀 What's Included
 
