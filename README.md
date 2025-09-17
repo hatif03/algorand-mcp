@@ -8,9 +8,21 @@ A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algo
 
 ## 🎥 Project Demo
 
-[![Watch the demo](https://img.youtube.com/vi/2MtLTSmOi5Y/hqdefault.jpg)](https://youtu.be/2MtLTSmOi5Y "Algorand MCP - Project Demo")
+<!-- markdownlint-disable MD033 -->
+<div align="center">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/2MtLTSmOi5Y"
+    title="Algorand MCP - Project Demo"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen>
+  </iframe>
+</div>
+<!-- markdownlint-enable MD033 -->
 
-Prefer a direct link? Watch here: [https://youtu.be/2MtLTSmOi5Y](https://youtu.be/2MtLTSmOi5Y)
+If the player doesn't load on GitHub, watch here: [https://youtu.be/2MtLTSmOi5Y](https://youtu.be/2MtLTSmOi5Y)
 
 ## 🚀 What's Included
 
