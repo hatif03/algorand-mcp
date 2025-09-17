@@ -1,25 +1,48 @@
-# Algorand MCP Server v1.0.0
+# Algorand MCP Server v3.0.0
 
-A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algorand blockchain development, including account management, asset operations, smart contracts, API integration, and advanced transaction capabilities.
+A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algorand blockchain development, including account management, asset operations, smart contracts, API integration, swap functionality, and advanced transaction capabilities.
 
-> **Note**: This is version 1 of the Algorand MCP Server, providing a complete foundation for Algorand development with AI assistants.
+> **⭐ New in v3.0**: Added swap functionality with Pera Swap integration and a complete Raycast extension for native macOS integration!
+
+## 🚀 What's Included
+
+This repository contains two powerful tools for Algorand development:
+
+1. **🤖 MCP Server** - AI assistant integration with 50+ blockchain tools
+2. **⚡ Raycast Extension** - Native macOS toolbar integration for Algorand operations
+
+![Raycast Extension](raycast/algorand/assets/screenshot.png)
 
 ## Overview
 
 This MCP server provides a complete suite of tools for AI assistants to interact with the Algorand blockchain, from basic operations to advanced smart contract development and deployment.
 
-### Tool Categories
+### 🤖 MCP Server Tool Categories
 
 - **Basic Tools** (4 tools): Echo, calculations, time, testnet funding
 - **Core Algorand Tools** (8 tools): Account generation, payments, assets, transactions
+- **Swap Tools** (5 tools): **NEW!** Asset swapping with Pera Swap integration
 - **Utility Tools** (10 tools): Address validation, encoding, TEAL compilation, cryptography
 - **API Integration Tools** (12 tools): Algod, Indexer, and NFD API access
 - **Advanced Transaction Tools** (8 tools): Atomic groups, smart contracts, key registration
 - **ARC-26 Tools** (2 tools): URI generation and QR codes
-- **Knowledge Tools** (1 tool): Semantic search through Algorand documentation
+- **Knowledge Tools** (4 tools): Semantic search through Algorand documentation
 - **Wallet Management** (2 tools): Secure wallet storage and retrieval
 
-**Total: 47+ tools** for comprehensive Algorand development
+**Total: 55+ tools** for comprehensive Algorand development
+
+### ⚡ Raycast Extension Features
+
+- **🔐 Wallet Management**: Secure wallet creation and management
+- **💸 Transactions**: Send ALGO and transfer assets with ease
+- **🔄 Asset Swapping**: **NEW!** DEX aggregation with real-time quotes
+- **🪙 Asset Operations**: Create and manage ASAs (tokens)
+- **📊 Portfolio View**: Detailed asset holdings and balances
+- **⚡ Quick Actions**: Keyboard shortcuts for all operations
+- **🔗 Explorer Integration**: Direct links to AlgoExplorer
+
+## Architecture
+![Architecture Diagram](https://github.com/hatif03/algorand-mcp/blob/main/assets/diagram.png)
 
 ## Security Features
 
@@ -42,16 +65,16 @@ This MCP server provides a complete suite of tools for AI assistants to interact
 - TypeScript
 - Algorand testnet account (for testing)
 
-## Installation
+## 🛠️ Installation
 
-1. Clone or download this project
-2. Install dependencies:
+### MCP Server Setup
 
+1. **Clone or download** this project
+2. **Install dependencies**:
    ```bash
    npm install
    ```
-
-3. Create environment configuration:
+3. **Create environment configuration**:
 
    ```bash
    # Create .env file with the following variables:
@@ -67,11 +90,25 @@ This MCP server provides a complete suite of tools for AI assistants to interact
    OPENAI_API_KEY=your_openai_api_key
    ```
 
-4. Build the project:
-
+4. **Build the project**:
    ```bash
    npm run build
    ```
+
+### Raycast Extension Setup
+
+1. **Navigate to the extension**:
+   ```bash
+   cd raycast/algorand
+   npm install
+   npm run build
+   ```
+2. **Import into Raycast**:
+   - Open Raycast → Extensions → Import Extension
+   - Select the `raycast/algorand` folder
+   - Start using Algorand commands from your toolbar!
+
+📖 **Detailed setup guides**: See [Raycast README](raycast/algorand/README.md) for complete instructions.
 
 ## Usage
 
@@ -351,6 +388,28 @@ case 'my_tool': {
   };
 }
 ```
+
+## 🆕 What's New in v3.0
+
+### 🔄 Swap Functionality
+- **DEX Aggregation**: Powered by Pera Swap SDK for best prices
+- **Multi-DEX Support**: Tinyman, Vestige, and more DEXs
+- **Real-time Quotes**: Live pricing with slippage control
+- **Secure Execution**: Client-side transaction signing
+- **5 New MCP Tools**: Complete swap workflow integration
+
+### ⚡ Raycast Extension
+- **Native macOS Integration**: Access Algorand from your toolbar
+- **Beautiful UI**: Native Raycast components with rich formatting
+- **Keyboard Shortcuts**: Quick actions for power users
+- **Secure Storage**: Encrypted wallet management
+- **Portfolio View**: Detailed asset holdings and balances
+
+### 🛠️ Enhanced Developer Experience
+- **TypeScript Support**: Full type safety across all tools
+- **Better Error Handling**: More descriptive error messages
+- **Documentation Search**: Semantic search through Algorand docs
+- **Asset Discovery**: Search and explore available tokens
 
 ## Security Considerations
 
