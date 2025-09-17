@@ -6,6 +6,12 @@ A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algo
 
 > **⭐ New in v0.1**: Added swap functionality with Pera Swap integration and a complete Raycast extension for native macOS integration!
 
+## 🎥 Project Demo
+
+[![Watch the demo](https://img.youtube.com/vi/2MtLTSmOi5Y/hqdefault.jpg)](https://youtu.be/2MtLTSmOi5Y "Algorand MCP - Project Demo")
+
+Prefer a direct link? Watch here: [https://youtu.be/2MtLTSmOi5Y](https://youtu.be/2MtLTSmOi5Y)
+
 ## 🚀 What's Included
 
 This repository contains two powerful tools for Algorand development:
