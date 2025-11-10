@@ -1,14 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  Detail,
-  showToast,
-  Toast,
-  Icon,
-  Form,
-  useNavigation,
-  LaunchProps,
-} from "@raycast/api";
+import { ActionPanel, Action, Detail, showToast, Toast, Icon, Form, useNavigation, LaunchProps } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { WalletService } from "./services/wallet-service";
 
@@ -58,7 +48,7 @@ export default function AssetInfo(props: LaunchProps<{ arguments: AssetInfoArgum
 
   const fetchAssetInfo = async (id?: string) => {
     const targetId = id || inputAssetId;
-    
+
     if (!targetId) {
       setError("Asset ID is required");
       return;
@@ -71,7 +61,7 @@ export default function AssetInfo(props: LaunchProps<{ arguments: AssetInfoArgum
 
     setIsLoading(true);
     setError("");
-    
+
     try {
       await showToast({
         style: Toast.Style.Animated,
@@ -86,13 +76,13 @@ export default function AssetInfo(props: LaunchProps<{ arguments: AssetInfoArgum
       await showToast({
         style: Toast.Style.Success,
         title: "Asset Info Retrieved",
-        message: `Found asset: ${info.params?.name || 'Unnamed Asset'}`,
+        message: `Found asset: ${info.params?.name || "Unnamed Asset"}`,
       });
     } catch (error) {
       console.error("Error fetching asset info:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch asset information";
       setError(errorMessage);
-      
+
       await showToast({
         style: Toast.Style.Failure,
         title: "Asset Not Found",
@@ -111,7 +101,6 @@ export default function AssetInfo(props: LaunchProps<{ arguments: AssetInfoArgum
     const divisor = Math.pow(10, decimals);
     return (total / divisor).toLocaleString();
   };
-
 
   if (assetInfo) {
     const markdown = `# 🎯 Asset Information
@@ -160,27 +149,19 @@ ${assetInfo.params.metadataHash ? `- **Metadata Hash**: \`${assetInfo.params.met
         markdown={markdown}
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard
-              title="Copy Asset ID"
-              content={assetInfo.id.toString()}
-              icon={Icon.CopyClipboard}
-            />
+            <Action.CopyToClipboard title="Copy Asset ID" content={assetInfo.id.toString()} icon={Icon.CopyClipboard} />
             <Action.CopyToClipboard
               title="Copy Asset Name"
               content={assetInfo.params.name || "Unnamed Asset"}
               icon={Icon.Document}
             />
             <Action.OpenInBrowser
-              title="View on AlgoExplorer"
+              title="View on Algoexplorer"
               url={`https://testnet.algoexplorer.io/asset/${assetInfo.id}`}
               icon={Icon.Globe}
             />
             {assetInfo.params.url && (
-              <Action.OpenInBrowser
-                title="Open Asset URL"
-                url={assetInfo.params.url}
-                icon={Icon.Link}
-              />
+              <Action.OpenInBrowser title="Open Asset URL" url={assetInfo.params.url} icon={Icon.Link} />
             )}
             <Action.CopyToClipboard
               title="Copy Creator Address"
@@ -208,11 +189,7 @@ ${assetInfo.params.metadataHash ? `- **Metadata Hash**: \`${assetInfo.params.met
       isLoading={isLoading}
       actions={
         <ActionPanel>
-          <Action
-            title="Get Asset Info"
-            onAction={() => fetchAssetInfo()}
-            icon={Icon.MagnifyingGlass}
-          />
+          <Action title="Get Asset Info" onAction={() => fetchAssetInfo()} icon={Icon.MagnifyingGlass} />
           <Action title="Cancel" onAction={pop} icon={Icon.XMarkCircle} />
         </ActionPanel>
       }

@@ -1,13 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  Form,
-  showToast,
-  Toast,
-  Icon,
-  useNavigation,
-  Detail,
-} from "@raycast/api";
+import { ActionPanel, Action, Form, showToast, Toast, Icon, useNavigation, Detail } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { WalletService } from "./services/wallet-service";
 
@@ -49,7 +40,7 @@ export default function SwapAssets() {
   const [walletAddress, setWalletAddress] = useState("");
   const [step, setStep] = useState<"setup" | "quote" | "confirm" | "result">("setup");
   const [result, setResult] = useState<{ txId: string; confirmedRound: number } | null>(null);
-  const { push, pop } = useNavigation();
+  const { pop } = useNavigation();
   const walletService = WalletService.getInstance();
 
   useEffect(() => {
@@ -66,7 +57,7 @@ export default function SwapAssets() {
     try {
       const wallet = await walletService.getOrCreateWallet();
       setWalletAddress(wallet.address);
-      
+
       // Set ALGO as default from asset
       const algoAsset: SwapAsset = {
         asset_id: 0,
@@ -76,10 +67,10 @@ export default function SwapAssets() {
         fraction_decimals: 6,
         usd_value: null,
         is_verified: true,
-        verification_tier: "verified"
+        verification_tier: "verified",
       };
       setFromAsset(algoAsset);
-    } catch (error) {
+    } catch {
       await showToast({
         style: Toast.Style.Failure,
         title: "Error",
@@ -90,7 +81,7 @@ export default function SwapAssets() {
 
   const loadAvailableAssets = async () => {
     if (!fromAsset) return;
-    
+
     try {
       const assets = await walletService.getAvailableSwapAssets(fromAsset.asset_id);
       setAvailableAssets(assets);
@@ -142,7 +133,7 @@ export default function SwapAssets() {
         toAsset.asset_id,
         amountInBaseUnits,
         walletAddress,
-        slippageDecimal
+        slippageDecimal,
       );
 
       setQuote(swapQuote);
@@ -227,13 +218,9 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
         markdown={markdown}
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard
-              title="Copy Transaction ID"
-              content={result.txId}
-              icon={Icon.CopyClipboard}
-            />
+            <Action.CopyToClipboard title="Copy Transaction ID" content={result.txId} icon={Icon.CopyClipboard} />
             <Action.OpenInBrowser
-              title="View on AlgoExplorer"
+              title="View on Algoexplorer"
               url={`https://testnet.algoexplorer.io/tx/${result.txId}`}
               icon={Icon.Globe}
             />
@@ -284,17 +271,8 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
         markdown={markdown}
         actions={
           <ActionPanel>
-            <Action
-              title="Confirm Swap"
-              onAction={executeSwap}
-              icon={Icon.Check}
-              style={Action.Style.Destructive}
-            />
-            <Action
-              title="Back to Setup"
-              onAction={() => setStep("setup")}
-              icon={Icon.ArrowLeft}
-            />
+            <Action title="Confirm Swap" onAction={executeSwap} icon={Icon.Check} style={Action.Style.Destructive} />
+            <Action title="Back to Setup" onAction={() => setStep("setup")} icon={Icon.ArrowLeft} />
           </ActionPanel>
         }
       />
@@ -312,7 +290,9 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
         </ActionPanel>
       }
     >
-      <Form.Description text={`Swap assets using Pera Swap on Algorand testnet\nWallet: ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`} />
+      <Form.Description
+        text={`Swap assets using Pera Swap on Algorand testnet\nWallet: ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`}
+      />
 
       <Form.Separator />
 
@@ -322,7 +302,11 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
         placeholder="Enter amount to swap"
         value={fromAmount}
         onChange={setFromAmount}
-        error={fromAmount && (isNaN(parseFloat(fromAmount)) || parseFloat(fromAmount) <= 0) ? "Amount must be a positive number" : undefined}
+        error={
+          fromAmount && (isNaN(parseFloat(fromAmount)) || parseFloat(fromAmount) <= 0)
+            ? "Amount must be a positive number"
+            : undefined
+        }
       />
 
       <Form.Dropdown
@@ -339,7 +323,7 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
               fraction_decimals: 6,
               usd_value: null,
               is_verified: true,
-              verification_tier: "verified"
+              verification_tier: "verified",
             });
           }
         }}
@@ -363,7 +347,7 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
         title="To Asset"
         value={toAsset?.asset_id.toString() || ""}
         onChange={(value) => {
-          const asset = availableAssets.find(a => a.asset_id.toString() === value);
+          const asset = availableAssets.find((a) => a.asset_id.toString() === value);
           if (asset) {
             setToAsset(asset);
           }
@@ -380,12 +364,7 @@ Your swap has been successfully executed on the Algorand testnet using Pera Swap
         ))}
       </Form.Dropdown>
 
-      <Form.Dropdown
-        id="slippage"
-        title="Slippage Tolerance"
-        value={slippage}
-        onChange={setSlippage}
-      >
+      <Form.Dropdown id="slippage" title="Slippage Tolerance" value={slippage} onChange={setSlippage}>
         <Form.Dropdown.Item value="0.1" title="0.1% (Low)" />
         <Form.Dropdown.Item value="0.5" title="0.5% (Normal)" />
         <Form.Dropdown.Item value="1.0" title="1.0% (High)" />

@@ -1,14 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  Detail,
-  showToast,
-  Toast,
-  Icon,
-  Form,
-  useNavigation,
-  LaunchProps,
-} from "@raycast/api";
+import { ActionPanel, Action, Detail, showToast, Toast, Icon, Form, useNavigation, LaunchProps } from "@raycast/api";
 import { useState } from "react";
 import { WalletService } from "./services/wallet-service";
 import algosdk from "algosdk";
@@ -88,7 +78,7 @@ export default function TransferAsset(props: LaunchProps<{ arguments: TransferAs
         recipientAddress,
         assetIdNum,
         amountNum,
-        transactionNote || undefined
+        transactionNote || undefined,
       );
 
       setResult(txResult);
@@ -101,7 +91,7 @@ export default function TransferAsset(props: LaunchProps<{ arguments: TransferAs
     } catch (error) {
       console.error("Error transferring asset:", error);
       let errorMessage = "Failed to transfer asset";
-      
+
       if (error instanceof Error) {
         if (error.message.includes("asset not found")) {
           errorMessage = "Asset not found. Check the Asset ID.";
@@ -151,13 +141,9 @@ Your asset has been successfully transferred to the recipient address. The trans
         markdown={markdown}
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard
-              title="Copy Transaction ID"
-              content={result.txId}
-              icon={Icon.CopyClipboard}
-            />
+            <Action.CopyToClipboard title="Copy Transaction ID" content={result.txId} icon={Icon.CopyClipboard} />
             <Action.OpenInBrowser
-              title="View on AlgoExplorer"
+              title="View on Algoexplorer"
               url={`https://lora.algokit.io/testnet/transaction/${result.txId}`}
               icon={Icon.Globe}
             />
@@ -198,7 +184,7 @@ Your asset has been successfully transferred to the recipient address. The trans
         onChange={setRecipientAddress}
         error={recipientAddress && !algosdk.isValidAddress(recipientAddress) ? "Invalid address" : undefined}
       />
-      
+
       <Form.TextField
         id="assetId"
         title="Asset ID"
@@ -211,7 +197,7 @@ Your asset has been successfully transferred to the recipient address. The trans
             : undefined
         }
       />
-      
+
       <Form.TextField
         id="amount"
         title="Amount"
@@ -224,7 +210,7 @@ Your asset has been successfully transferred to the recipient address. The trans
             : undefined
         }
       />
-      
+
       <Form.TextField
         id="note"
         title="Transaction Note (Optional)"
@@ -239,9 +225,9 @@ Your asset has been successfully transferred to the recipient address. The trans
       <Form.Description text="• The recipient must have opted into this asset" />
       <Form.Description text="• You must own sufficient units of this asset" />
       <Form.Description text="• A small ALGO fee is required for the transaction" />
-      
+
       <Form.Separator />
-      
+
       <Form.Description text="💡 Tip: Asset transfers are irreversible. Double-check the recipient address and amount before sending!" />
     </Form>
   );

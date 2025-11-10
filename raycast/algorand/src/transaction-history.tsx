@@ -1,14 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  List,
-  showToast,
-  Toast,
-  Icon,
-  Color,
-  Detail,
-  useNavigation,
-} from "@raycast/api";
+import { ActionPanel, Action, List, showToast, Toast, Icon, Color, Detail, useNavigation } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { WalletService } from "./services/wallet-service";
 
@@ -52,7 +42,7 @@ export default function TransactionHistory() {
 
       const historyResponse = await walletService.getTransactionHistory(wallet.address);
       const processedTransactions = await processTransactions(historyResponse.transactions || []);
-      
+
       setTransactions(processedTransactions);
 
       await showToast({
@@ -72,7 +62,7 @@ export default function TransactionHistory() {
     }
   };
 
-  const processTransactions = async (txns: any[]): Promise<Transaction[]> => {
+  const processTransactions = async (txns: Record<string, unknown>[]): Promise<Transaction[]> => {
     const processed: Transaction[] = [];
 
     for (const txn of txns) {
@@ -98,7 +88,7 @@ export default function TransactionHistory() {
           transaction.amount = txn["asset-transfer-transaction"].amount;
           transaction.receiver = txn["asset-transfer-transaction"].receiver;
           transaction.assetId = txn["asset-transfer-transaction"]["asset-id"];
-          
+
           // Try to get asset info
           try {
             const assetInfo = await walletService.getAssetInfo(transaction.assetId || 0);
@@ -130,7 +120,7 @@ export default function TransactionHistory() {
 
   const getTransactionIcon = (transaction: Transaction): { source: Icon; tintColor?: Color } => {
     if (transaction.type === "Payment") {
-      return transaction.sender === walletAddress 
+      return transaction.sender === walletAddress
         ? { source: Icon.ArrowUp, tintColor: Color.Red }
         : { source: Icon.ArrowDown, tintColor: Color.Green };
     } else if (transaction.type === "Asset Transfer") {
@@ -182,11 +172,7 @@ export default function TransactionHistory() {
   };
 
   return (
-    <List
-      navigationTitle="Transaction History"
-      isLoading={isLoading}
-      searchBarPlaceholder="Search transactions..."
-    >
+    <List navigationTitle="Transaction History" isLoading={isLoading} searchBarPlaceholder="Search transactions...">
       {transactions.length === 0 && !isLoading ? (
         <List.EmptyView
           icon={Icon.BankNote}
@@ -208,18 +194,14 @@ export default function TransactionHistory() {
             accessories={[{ text: getTransactionAccessory(transaction) }]}
             actions={
               <ActionPanel>
-                <Action
-                  title="View Details"
-                  onAction={() => showTransactionDetail(transaction)}
-                  icon={Icon.Eye}
-                />
+                <Action title="View Details" onAction={() => showTransactionDetail(transaction)} icon={Icon.Eye} />
                 <Action.CopyToClipboard
                   title="Copy Transaction ID"
                   content={transaction.id}
                   icon={Icon.CopyClipboard}
                 />
                 <Action.OpenInBrowser
-                  title="View on AlgoExplorer"
+                  title="View on Algoexplorer"
                   url={`https://lora.algokit.io/testnet/transaction/${transaction.id}`}
                   icon={Icon.Globe}
                 />
@@ -260,34 +242,46 @@ function TransactionDetail({ transaction, walletAddress }: { transaction: Transa
 - **Date**: ${new Date(transaction.timestamp * 1000).toLocaleString()}
 
 ## 💰 Transaction Details
-${transaction.type === "Payment" ? `
+${
+  transaction.type === "Payment"
+    ? `
 - **Amount**: ${walletService.formatAmount(transaction.amount || 0, 6)} ALGO
 - **Sender**: \`${transaction.sender}\`
 - **Receiver**: \`${transaction.receiver || "N/A"}\`
-` : transaction.type === "Asset Transfer" ? `
+`
+    : transaction.type === "Asset Transfer"
+      ? `
 - **Asset**: ${transaction.assetName || `Asset ${transaction.assetId}`}
 - **Asset ID**: ${transaction.assetId}
 - **Amount**: ${transaction.amount || 0} units
 - **Sender**: \`${transaction.sender}\`
 - **Receiver**: \`${transaction.receiver || "N/A"}\`
-` : transaction.type === "Asset Creation" ? `
+`
+      : transaction.type === "Asset Creation"
+        ? `
 - **Asset Name**: ${transaction.assetName || "Unknown"}
 - **Creator**: \`${transaction.sender}\`
-` : `
+`
+        : `
 - **Sender**: \`${transaction.sender}\`
-`}
+`
+}
 
 ## 🔗 Blockchain Information
 - **Transaction ID**: \`${transaction.id}\`
 - **Fee**: ${walletService.formatAmount(transaction.fee, 6)} ALGO
 - **Confirmed Round**: ${transaction.round}
 
-${transaction.note ? `
+${
+  transaction.note
+    ? `
 ## 📝 Note
 \`\`\`
 ${transaction.note}
 \`\`\`
-` : ""}
+`
+    : ""
+}
 
 ---
 
@@ -300,21 +294,13 @@ ${transaction.note}
       markdown={markdown}
       actions={
         <ActionPanel>
-          <Action.CopyToClipboard
-            title="Copy Transaction ID"
-            content={transaction.id}
-            icon={Icon.CopyClipboard}
-          />
+          <Action.CopyToClipboard title="Copy Transaction ID" content={transaction.id} icon={Icon.CopyClipboard} />
           <Action.OpenInBrowser
-            title="View on AlgoExplorer"
+            title="View on Algoexplorer"
             url={`https://lora.algokit.io/testnet/transaction/${transaction.id}`}
             icon={Icon.Globe}
           />
-          <Action.CopyToClipboard
-            title="Copy Sender Address"
-            content={transaction.sender}
-            icon={Icon.Person}
-          />
+          <Action.CopyToClipboard title="Copy Sender Address" content={transaction.sender} icon={Icon.Person} />
           {transaction.receiver && (
             <Action.CopyToClipboard
               title="Copy Receiver Address"

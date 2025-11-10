@@ -1,13 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  Detail,
-  showToast,
-  Toast,
-  Icon,
-  confirmAlert,
-  Alert,
-} from "@raycast/api";
+import { ActionPanel, Action, Detail, showToast, Toast, Icon, confirmAlert, Alert } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { WalletService, WalletData } from "./services/wallet-service";
 
@@ -28,11 +19,11 @@ export default function ExportWallet() {
     try {
       const wallet = await walletService.getOrCreateWallet();
       setWalletData(wallet);
-      
+
       // Generate keys
       const privKey = walletService.getPrivateKeyFromMnemonic(wallet.mnemonic);
       const pubKey = walletService.getPublicKeyFromMnemonic(wallet.mnemonic);
-      
+
       setPrivateKey(privKey);
       setPublicKey(pubKey);
     } catch (error) {
@@ -50,7 +41,8 @@ export default function ExportWallet() {
   const showSensitiveData = async () => {
     const confirmed = await confirmAlert({
       title: "⚠️ Security Warning",
-      message: "You are about to view sensitive wallet information including your private key and mnemonic phrase. Make sure no one else can see your screen and you are in a secure environment.",
+      message:
+        "You are about to view sensitive wallet information including your private key and mnemonic phrase. Make sure no one else can see your screen and you are in a secure environment.",
       primaryAction: {
         title: "Show Sensitive Data",
         style: Alert.ActionStyle.Destructive,
@@ -181,13 +173,9 @@ Anyone with access to your mnemonic phrase or private key can control your entir
         walletData && (
           <ActionPanel>
             <ActionPanel.Section title="Wallet Information">
-              <Action.CopyToClipboard
-                title="Copy Address"
-                content={walletData.address}
-                icon={Icon.CopyClipboard}
-              />
+              <Action.CopyToClipboard title="Copy Address" content={walletData.address} icon={Icon.CopyClipboard} />
               <Action.OpenInBrowser
-                title="View on AlgoExplorer"
+                title="View on Algoexplorer"
                 url={`https://lora.algokit.io/testnet/address/${walletData.address}`}
                 icon={Icon.Globe}
               />

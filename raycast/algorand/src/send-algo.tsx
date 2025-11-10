@@ -1,15 +1,5 @@
-import {
-  ActionPanel,
-  Action,
-  Detail,
-  showToast,
-  Toast,
-  Icon,
-  Form,
-  useNavigation,
-  LaunchProps,
-} from "@raycast/api";
-import { useState, useEffect } from "react";
+import { ActionPanel, Action, Detail, showToast, Toast, Icon, Form, useNavigation, LaunchProps } from "@raycast/api";
+import { useState } from "react";
 import { WalletService } from "./services/wallet-service";
 import algosdk from "algosdk";
 
@@ -80,7 +70,7 @@ export default function SendAlgo(props: LaunchProps<{ arguments: SendAlgoArgumen
         wallet.mnemonic,
         recipientAddress,
         amountNum,
-        transactionNote || undefined
+        transactionNote || undefined,
       );
 
       setResult(txResult);
@@ -125,13 +115,9 @@ Your ALGO has been successfully sent to the recipient address. The transaction h
         markdown={markdown}
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard
-              title="Copy Transaction ID"
-              content={result.txId}
-              icon={Icon.CopyClipboard}
-            />
+            <Action.CopyToClipboard title="Copy Transaction ID" content={result.txId} icon={Icon.CopyClipboard} />
             <Action.OpenInBrowser
-              title="View on AlgoExplorer"
+              title="View on Algoexplorer"
               url={`https://lora.algokit.io/testnet/transaction/${result.txId}`}
               icon={Icon.Globe}
             />
@@ -171,7 +157,7 @@ Your ALGO has been successfully sent to the recipient address. The transaction h
         onChange={setRecipientAddress}
         error={recipientAddress && !algosdk.isValidAddress(recipientAddress) ? "Invalid address" : undefined}
       />
-      
+
       <Form.TextField
         id="amount"
         title="Amount (ALGO)"
@@ -184,7 +170,7 @@ Your ALGO has been successfully sent to the recipient address. The transaction h
             : undefined
         }
       />
-      
+
       <Form.TextField
         id="note"
         title="Transaction Note (Optional)"
@@ -194,9 +180,9 @@ Your ALGO has been successfully sent to the recipient address. The transaction h
       />
 
       <Form.Description text="⚠️ Make sure the recipient address is correct. Transactions on the blockchain cannot be reversed!" />
-      
+
       <Form.Separator />
-      
+
       <Form.Description text="💡 Tip: This transaction will be sent on the Algorand testnet. Make sure your wallet has sufficient balance including the transaction fee (0.001 ALGO)." />
     </Form>
   );

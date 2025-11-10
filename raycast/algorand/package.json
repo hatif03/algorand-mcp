@@ -23,7 +23,7 @@
     },
     {
       "name": "send-algo",
-      "title": "Send ALGO",
+      "title": "Send Algo",
       "description": "Send ALGO to another address",
       "mode": "view",
       "arguments": [

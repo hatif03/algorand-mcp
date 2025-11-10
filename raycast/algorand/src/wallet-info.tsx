@@ -1,14 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  Detail,
-  showToast,
-  Toast,
-  Icon,
-  useNavigation,
-  confirmAlert,
-  Alert,
-} from "@raycast/api";
+import { ActionPanel, Action, Detail, showToast, Toast, Icon, confirmAlert, Alert } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { WalletService, WalletData } from "./services/wallet-service";
 import SendAlgo from "./send-algo";
@@ -22,9 +12,8 @@ import TransferAsset from "./transfer-asset";
 export default function WalletInfo() {
   const [isLoading, setIsLoading] = useState(true);
   const [walletData, setWalletData] = useState<WalletData | null>(null);
-  const [accountInfo, setAccountInfo] = useState<any>(null);
-  const [detailedAssets, setDetailedAssets] = useState<any[]>([]);
-  const { push } = useNavigation();
+  const [accountInfo, setAccountInfo] = useState<Record<string, unknown> | null>(null);
+  const [detailedAssets, setDetailedAssets] = useState<Record<string, unknown>[]>([]);
   const walletService = WalletService.getInstance();
 
   useEffect(() => {
@@ -36,15 +25,15 @@ export default function WalletInfo() {
     try {
       const wallet = await walletService.getOrCreateWallet();
       setWalletData(wallet);
-      
+
       try {
         const info = await walletService.getAccountInfo(wallet.address);
         setAccountInfo(info);
-        
+
         // Fetch detailed asset information
         const assets = await walletService.getDetailedAccountAssets(wallet.address);
         setDetailedAssets(assets);
-      } catch (error) {
+      } catch {
         // Account not found on testnet - this is normal for new wallets
         setAccountInfo(null);
         setDetailedAssets([]);
@@ -74,7 +63,7 @@ export default function WalletInfo() {
 
       const info = await walletService.getAccountInfo(walletData.address);
       setAccountInfo(info);
-      
+
       // Fetch detailed asset information
       const assets = await walletService.getDetailedAccountAssets(walletData.address);
       setDetailedAssets(assets);
@@ -110,7 +99,7 @@ export default function WalletInfo() {
       });
 
       const result = await walletService.fundTestnet(walletData.address);
-      
+
       await showToast({
         style: Toast.Style.Success,
         title: "Testnet Funded!",
@@ -134,7 +123,8 @@ export default function WalletInfo() {
   const resetWallet = async () => {
     const confirmed = await confirmAlert({
       title: "Reset Wallet",
-      message: "This will permanently delete your current wallet and create a new one. Make sure you have backed up your mnemonic phrase!",
+      message:
+        "This will permanently delete your current wallet and create a new one. Make sure you have backed up your mnemonic phrase!",
       primaryAction: {
         title: "Reset Wallet",
         style: Alert.ActionStyle.Destructive,
@@ -155,7 +145,7 @@ export default function WalletInfo() {
           title: "Wallet Reset",
           message: "New wallet created successfully",
         });
-      } catch (error) {
+      } catch {
         await showToast({
           style: Toast.Style.Failure,
           title: "Error",
@@ -178,15 +168,17 @@ export default function WalletInfo() {
       return "No assets found";
     }
 
-    return detailedAssets.map((asset: any) => {
-      const frozenStatus = asset.isFrozen ? " (FROZEN)" : "";
-      const url = asset.url ? ` | URL: ${asset.url}` : "";
-      return `🪙 ${asset.name} (${asset.unitName})
+    return detailedAssets
+      .map((asset: Record<string, unknown>) => {
+        const frozenStatus = asset.isFrozen ? " (FROZEN)" : "";
+        const url = asset.url ? ` | URL: ${asset.url}` : "";
+        return `🪙 ${asset.name} (${asset.unitName})
    ID: ${asset.id}
    Balance: ${asset.formattedAmount} ${asset.unitName}${frozenStatus}
    Total Supply: ${(asset.total / Math.pow(10, asset.decimals)).toLocaleString()}
    Creator: ${asset.creator}${url}`;
-    }).join("\n\n");
+      })
+      .join("\n\n");
   };
 
   const markdown = `# 🔐 Your Algorand Wallet
@@ -203,7 +195,9 @@ ${walletData.address}
 ## 💰 Balance
 **${getBalanceDisplay()}**
 
-${accountInfo ? `
+${
+  accountInfo
+    ? `
 ### Account Details
 - **Minimum Balance**: ${(accountInfo["min-balance"] / 1000000).toFixed(6)} ALGO
 - **Total Apps Opted In**: ${accountInfo["total-apps-opted-in"] || 0}
@@ -215,10 +209,12 @@ ${accountInfo ? `
 \`\`\`
 ${getAssetsDisplay()}
 \`\`\`
-` : `
+`
+    : `
 ### ⚠️ Account Status
 This account is not yet active on the Algorand testnet. Fund it to get started!
-`}
+`
+}
 
 ## 🔑 Wallet Details
 - **Created**: ${new Date(walletData.createdAt).toLocaleString()}
@@ -245,11 +241,7 @@ Your wallet is encrypted and stored securely on this device. The mnemonic phrase
         walletData && (
           <ActionPanel>
             <ActionPanel.Section title="Wallet Actions">
-              <Action.CopyToClipboard
-                title="Copy Address"
-                content={walletData.address}
-                icon={Icon.CopyClipboard}
-              />
+              <Action.CopyToClipboard title="Copy Address" content={walletData.address} icon={Icon.CopyClipboard} />
               <Action.CopyToClipboard
                 title="Copy Mnemonic"
                 content={walletData.mnemonic}
@@ -263,7 +255,7 @@ Your wallet is encrypted and stored securely on this device. The mnemonic phrase
                 shortcut={{ modifiers: ["cmd"], key: "r" }}
               />
             </ActionPanel.Section>
-            
+
             <ActionPanel.Section title="Testnet Actions">
               <Action
                 title="Fund Testnet Account"
@@ -275,7 +267,7 @@ Your wallet is encrypted and stored securely on this device. The mnemonic phrase
 
             <ActionPanel.Section title="Quick Actions">
               <Action.Push
-                title="Send ALGO"
+                title="Send Algo"
                 target={<SendAlgo arguments={{ toAddress: "", amount: "", note: "" }} />}
                 icon={Icon.ArrowRight}
                 shortcut={{ modifiers: ["cmd"], key: "s" }}
@@ -324,7 +316,7 @@ Your wallet is encrypted and stored securely on this device. The mnemonic phrase
                 ))}
                 {detailedAssets.length > 5 && (
                   <Action
-                    title={`... and ${detailedAssets.length - 5} more assets`}
+                    title={`... And ${detailedAssets.length - 5} More Assets`}
                     onAction={() => {}}
                     icon={Icon.Ellipsis}
                   />

@@ -1,13 +1,4 @@
-import {
-  ActionPanel,
-  Action,
-  Detail,
-  showToast,
-  Toast,
-  Icon,
-  Form,
-  useNavigation,
-} from "@raycast/api";
+import { ActionPanel, Action, Detail, showToast, Toast, Icon, Form, useNavigation } from "@raycast/api";
 import { useState } from "react";
 import { WalletService } from "./services/wallet-service";
 
@@ -91,7 +82,7 @@ export default function CreateAsset() {
         supply,
         decimalsNum,
         defaultFrozen,
-        assetUrl.trim() || undefined
+        assetUrl.trim() || undefined,
       );
 
       setResult(assetResult);
@@ -151,13 +142,9 @@ Your Algorand Standard Asset (ASA) has been successfully created on the testnet!
               content={result.assetId.toString()}
               icon={Icon.CopyClipboard}
             />
-            <Action.CopyToClipboard
-              title="Copy Transaction ID"
-              content={result.txId}
-              icon={Icon.Document}
-            />
+            <Action.CopyToClipboard title="Copy Transaction ID" content={result.txId} icon={Icon.Document} />
             <Action.OpenInBrowser
-              title="View on AlgoExplorer"
+              title="View on Algoexplorer"
               url={`https://lora.algokit.io/testnet/asset/${result.assetId}`}
               icon={Icon.Globe}
             />
@@ -199,7 +186,7 @@ Your Algorand Standard Asset (ASA) has been successfully created on the testnet!
         value={assetName}
         onChange={setAssetName}
       />
-      
+
       <Form.TextField
         id="unitName"
         title="Unit Name"
@@ -208,7 +195,7 @@ Your Algorand Standard Asset (ASA) has been successfully created on the testnet!
         onChange={setUnitName}
         error={unitName.length > 8 ? "Unit name must be 8 characters or less" : undefined}
       />
-      
+
       <Form.TextField
         id="totalSupply"
         title="Total Supply"
@@ -221,22 +208,13 @@ Your Algorand Standard Asset (ASA) has been successfully created on the testnet!
             : undefined
         }
       />
-      
-      <Form.Dropdown
-        id="decimals"
-        title="Decimals"
-        value={decimals}
-        onChange={setDecimals}
-      >
+
+      <Form.Dropdown id="decimals" title="Decimals" value={decimals} onChange={setDecimals}>
         {Array.from({ length: 20 }, (_, i) => (
-          <Form.Dropdown.Item
-            key={i}
-            value={i.toString()}
-            title={`${i} decimal${i !== 1 ? "s" : ""}`}
-          />
+          <Form.Dropdown.Item key={i} value={i.toString()} title={`${i} decimal${i !== 1 ? "s" : ""}`} />
         ))}
       </Form.Dropdown>
-      
+
       <Form.TextField
         id="assetUrl"
         title="Asset URL (Optional)"
@@ -245,7 +223,7 @@ Your Algorand Standard Asset (ASA) has been successfully created on the testnet!
         onChange={setAssetUrl}
         error={assetUrl.length > 96 ? "URL must be 96 characters or less" : undefined}
       />
-      
+
       <Form.Checkbox
         id="defaultFrozen"
         title="Default Frozen"
@@ -260,9 +238,9 @@ Your Algorand Standard Asset (ASA) has been successfully created on the testnet!
       <Form.Description text="• You will be the manager, reserve, freeze, and clawback address" />
       <Form.Description text="• Users must opt-in to your asset before receiving it" />
       <Form.Description text="• Asset creation requires a small transaction fee" />
-      
+
       <Form.Separator />
-      
+
       <Form.Description text="⚠️ Important: Asset properties cannot be changed after creation. Double-check all details!" />
     </Form>
   );
