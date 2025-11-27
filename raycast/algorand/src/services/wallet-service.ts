@@ -1,14 +1,7 @@
 import { LocalStorage, showToast, Toast } from "@raycast/api";
 import algosdk from "algosdk";
 import * as crypto from "crypto";
-import { 
-  Swap, 
-  SwapQuote, 
-  SwapQuoteType,
-  V2PoolInfo,
-  SupportedNetwork,
-  poolUtils,
-} from "@tinymanorg/tinyman-js-sdk";
+import { Swap, SwapQuote, SwapQuoteType, V2PoolInfo, SupportedNetwork, poolUtils } from "@tinymanorg/tinyman-js-sdk";
 
 // Interface for Tinyman Analytics API asset response
 interface TinymanAsset {
@@ -484,7 +477,7 @@ export class WalletService {
 
   // Swap-related methods using Tinyman DEX
   private readonly TINYMAN_NETWORK: SupportedNetwork = "testnet";
-  
+
   // Store the latest quote and pool info for executing swaps
   private currentSwapQuote: SwapQuote | null = null;
   private currentPool: V2PoolInfo | null = null;
@@ -513,27 +506,27 @@ export class WalletService {
       const algodClient = this.getAlgodClient();
 
       // Fetch asset details for display and quote calculation
-      const assetInInfo = fromAssetId === 0 
-        ? { name: "Algorand", unitName: "ALGO", decimals: 6 }
-        : await this.getAssetInfo(fromAssetId).then(info => ({
-            name: info.params.name,
-            unitName: info.params.unitName,
-            decimals: info.params.decimals,
-          }));
-      
-      const assetOutInfo = toAssetId === 0 
-        ? { name: "Algorand", unitName: "ALGO", decimals: 6 }
-        : await this.getAssetInfo(toAssetId).then(info => ({
-            name: info.params.name,
-            unitName: info.params.unitName,
-            decimals: info.params.decimals,
-          }));
+      const assetInInfo =
+        fromAssetId === 0
+          ? { name: "Algorand", unitName: "ALGO", decimals: 6 }
+          : await this.getAssetInfo(fromAssetId).then((info) => ({
+              name: info.params.name,
+              unitName: info.params.unitName,
+              decimals: info.params.decimals,
+            }));
+
+      const assetOutInfo =
+        toAssetId === 0
+          ? { name: "Algorand", unitName: "ALGO", decimals: 6 }
+          : await this.getAssetInfo(toAssetId).then((info) => ({
+              name: info.params.name,
+              unitName: info.params.unitName,
+              decimals: info.params.decimals,
+            }));
 
       // Fetch pool info - use the correct asset ordering (higher ID first for Tinyman)
-      const [asset1ID, asset2ID] = fromAssetId > toAssetId 
-        ? [fromAssetId, toAssetId] 
-        : [toAssetId, fromAssetId];
-      
+      const [asset1ID, asset2ID] = fromAssetId > toAssetId ? [fromAssetId, toAssetId] : [toAssetId, fromAssetId];
+
       const pool = await poolUtils.v2.getPoolInfo({
         client: algodClient,
         network: this.TINYMAN_NETWORK,
@@ -571,7 +564,7 @@ export class WalletService {
       // Extract quote data based on quote type
       let amountOut: bigint;
       let priceImpact: number;
-      
+
       if (quote.type === SwapQuoteType.Direct) {
         amountOut = quote.data.quote.assetOutAmount;
         priceImpact = quote.data.quote.priceImpact * 100;
@@ -648,22 +641,22 @@ export class WalletService {
       if (quote.type !== SwapQuoteType.Direct) {
         throw new Error("Only direct swaps are supported");
       }
-      
+
       const directQuote = quote.data.quote;
       // Convert to numbers - SDK quote may return BigInt or number
       const assetInID = Number(directQuote.assetInID);
       const assetInAmount = BigInt(directQuote.assetInAmount);
       const assetOutID = Number(directQuote.assetOutID);
       const assetOutAmount = BigInt(directQuote.assetOutAmount);
-      
+
       // Check if user needs to opt in to the output asset
       if (assetOutID !== 0) {
         const accountInfo = await algodClient.accountInformation(account.addr).do();
         const isOptedIn = accountInfo.assets?.some(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (asset: any) => asset["asset-id"] === assetOutID
+          (asset: any) => asset["asset-id"] === assetOutID,
         );
-        
+
         if (!isOptedIn) {
           console.log(`Opting in to asset ${assetOutID}...`);
           const optInParams = await algodClient.getTransactionParams().do();
@@ -680,16 +673,16 @@ export class WalletService {
           console.log(`Opted in to asset ${assetOutID}`);
         }
       }
-      
+
       // Calculate minimum output with slippage
       const minAmountOut = assetOutAmount - BigInt(Math.floor(Number(assetOutAmount) * params.slippage));
-      
+
       // Get transaction params
       const suggestedParams = await algodClient.getTransactionParams().do();
-      
+
       // Pool address
       const poolAddress = pool.account.address();
-      
+
       // Build swap transactions manually
       // Transaction 1: Input asset transfer to pool
       let inputTxn: algosdk.Transaction;
@@ -711,14 +704,14 @@ export class WalletService {
           suggestedParams,
         });
       }
-      
+
       // Transaction 2: App call to validator
       const swapAppArgs = [
         new Uint8Array(Buffer.from("swap")),
         new Uint8Array(Buffer.from("fixed-input")),
         algosdk.encodeUint64(minAmountOut),
       ];
-      
+
       const appCallTxn = algosdk.makeApplicationNoOpTxnFromObject({
         from: account.addr,
         appIndex: pool.validatorAppID,
@@ -727,20 +720,20 @@ export class WalletService {
         foreignAssets: [pool.asset1ID, pool.asset2ID],
         suggestedParams,
       });
-      
+
       // Set fee for inner transactions (swap has 2 inner txns)
       appCallTxn.fee = algosdk.ALGORAND_MIN_TX_FEE * 3;
-      
+
       // Assign group ID
       const txnGroup = algosdk.assignGroupID([inputTxn, appCallTxn]);
-      
+
       // Sign both transactions
       const signedInputTxn = txnGroup[0].signTxn(account.sk);
       const signedAppCallTxn = txnGroup[1].signTxn(account.sk);
-      
+
       // Submit the transaction group
       const { txId } = await algodClient.sendRawTransaction([signedInputTxn, signedAppCallTxn]).do();
-      
+
       // Wait for confirmation
       const confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 5);
 
@@ -768,16 +761,16 @@ export class WalletService {
     try {
       // Use Tinyman Analytics API to search for assets
       const response = await fetch(
-        `https://testnet.analytics.tinyman.org/api/v1/assets/?search=${encodeURIComponent(query)}&limit=20`
+        `https://testnet.analytics.tinyman.org/api/v1/assets/?search=${encodeURIComponent(query)}&limit=20`,
       );
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch assets");
       }
-      
+
       const data = (await response.json()) as TinymanAssetsResponse;
       const assets = data.results || [];
-      
+
       // Map to the expected format
       return assets.map((asset) => ({
         asset_id: asset.id,
@@ -787,7 +780,7 @@ export class WalletService {
         fraction_decimals: asset.decimals || 0,
         usd_value: asset.usd_value || null,
         is_verified: asset.is_verified || false,
-        verification_tier: asset.is_verified ? "verified" as const : "unverified" as const,
+        verification_tier: asset.is_verified ? ("verified" as const) : ("unverified" as const),
       }));
     } catch (error) {
       console.error("Error searching assets:", error);
@@ -799,17 +792,15 @@ export class WalletService {
   async getAvailableSwapAssets(_assetInId: number): Promise<any[]> {
     try {
       // Fetch popular/verified assets from Tinyman
-      const response = await fetch(
-        `https://testnet.analytics.tinyman.org/api/v1/assets/?is_verified=true&limit=50`
-      );
-      
+      const response = await fetch(`https://testnet.analytics.tinyman.org/api/v1/assets/?is_verified=true&limit=50`);
+
       if (!response.ok) {
         throw new Error("Failed to fetch assets");
       }
-      
+
       const data = (await response.json()) as TinymanAssetsResponse;
       const assets = data.results || [];
-      
+
       // Map to the expected format
       return assets.map((asset) => ({
         asset_id: asset.id,
@@ -819,7 +810,7 @@ export class WalletService {
         fraction_decimals: asset.decimals || 0,
         usd_value: asset.usd_value || null,
         is_verified: asset.is_verified || false,
-        verification_tier: asset.is_verified ? "verified" as const : "unverified" as const,
+        verification_tier: asset.is_verified ? ("verified" as const) : ("unverified" as const),
       }));
     } catch (error) {
       console.error("Error getting available assets:", error);
@@ -843,16 +834,14 @@ export class WalletService {
         };
       }
 
-      const response = await fetch(
-        `https://testnet.analytics.tinyman.org/api/v1/assets/${assetId}/`
-      );
-      
+      const response = await fetch(`https://testnet.analytics.tinyman.org/api/v1/assets/${assetId}/`);
+
       if (!response.ok) {
         return null;
       }
-      
+
       const asset = (await response.json()) as TinymanAsset;
-      
+
       return {
         asset_id: asset.id,
         name: asset.name || `Asset ${asset.id}`,
@@ -861,7 +850,7 @@ export class WalletService {
         fraction_decimals: asset.decimals || 0,
         usd_value: asset.usd_value || null,
         is_verified: asset.is_verified || false,
-        verification_tier: asset.is_verified ? "verified" as const : "unverified" as const,
+        verification_tier: asset.is_verified ? ("verified" as const) : ("unverified" as const),
       };
     } catch (error) {
       console.error("Error getting swap asset:", error);
