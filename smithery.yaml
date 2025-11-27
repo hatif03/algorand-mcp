@@ -1,0 +1,46 @@
+runtime: "container"
+build:
+  dockerfile: "Dockerfile"
+  dockerBuildPath: "."
+startCommand:
+  type: "http"
+  configSchema:
+    type: "object"
+    properties:
+      ALGORAND_NETWORK:
+        type: "string"
+        description: "Network to target (testnet, mainnet, localnet)"
+      ALGORAND_TOKEN:
+        type: "string"
+        description: "Algorand API token for algod/indexer"
+      ALGORAND_ALGOD:
+        type: "string"
+        description: "Algod endpoint URL"
+      ALGORAND_INDEXER:
+        type: "string"
+        description: "Indexer endpoint URL"
+      NFD_API_URL:
+        type: "string"
+        description: "NFD API base URL"
+      OPENAI_API_KEY:
+        type: "string"
+        description: "API key for knowledge search embeddings (optional)"
+      QDRANT_URL:
+        type: "string"
+        description: "Qdrant endpoint (optional)"
+      QDRANT_API_KEY:
+        type: "string"
+        description: "Qdrant API key (optional)"
+    required:
+      - ALGORAND_NETWORK
+      - ALGORAND_TOKEN
+      - ALGORAND_ALGOD
+      - ALGORAND_INDEXER
+      - NFD_API_URL
+  exampleConfig:
+    ALGORAND_NETWORK: "testnet"
+    ALGORAND_TOKEN: "your_api_token"
+    ALGORAND_ALGOD: "https://testnet-api.algonode.cloud"
+    ALGORAND_INDEXER: "https://testnet-idx.algonode.cloud"
+    NFD_API_URL: "https://api.nf.domains"
+

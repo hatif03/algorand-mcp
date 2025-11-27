@@ -125,6 +125,14 @@ This MCP server provides a complete suite of tools for AI assistants to interact
 npm start
 ```
 
+To expose the Streamable HTTP transport (required for Smithery or any remote deployment), use:
+
+```bash
+# Build and start the HTTP server locally
+npm run build
+npm run start:http
+```
+
 ### Development Mode
 
 For development with automatic rebuilding:
@@ -147,6 +155,17 @@ For manual testing of individual tools, see:
 - [TEST_QUERIES.txt](TEST_QUERIES.txt) - Plain text format for easy copy-paste
 
 Both files contain comprehensive test queries for all 47+ tools.
+
+## Deploying on Smithery
+
+Smithery expects MCP servers to expose the Streamable HTTP transport and listen on the `PORT` environment variable (defaults to `8081`). This repository now includes everything required for a custom-container deployment:
+
+1. `npm run build` – compile the TypeScript project.
+2. `docker build -t algorand-mcp .` – build the container defined in the provided `Dockerfile`.
+3. `docker run -p 8081:8081 --env-file .env algorand-mcp` – test locally; ensure all MCP-related env vars are available.
+4. Commit `Dockerfile` + `smithery.yaml`, then connect the repo inside Smithery and trigger a deployment. The platform automatically runs the container, sets `PORT=8081`, and hits `/mcp` over Streamable HTTP. [Reference](https://smithery.ai/docs/build/deployments/custom-container)
+
+The `smithery.yaml` file advertises the required configuration (Algorand endpoints, API keys, etc.) so that sessions launched from Smithery can inject the right secrets. For advanced tips—like enabling optional session configuration fields, handling `/mcp` CORS headers, and troubleshooting build failures—see the Smithery custom-container documentation. [Reference](https://smithery.ai/docs/build/deployments/custom-container)
 
 ### MCP Client Configuration
 
