@@ -1,5 +1,7 @@
 # Algorand MCP Server v0.1.1
 
+[![smithery badge](https://smithery.ai/badge/@hatif03/algorand-mcp)](https://smithery.ai/server/@hatif03/algorand-mcp)
+
 ![MCP Server](https://github.com/hatif03/algorand-mcp/blob/main/assets/cursor-screenshot.png)
 
 A comprehensive Model Context Protocol (MCP) server providing 50+ tools for Algorand blockchain development, including account management, asset operations, smart contracts, API integration, swap functionality, and advanced transaction capabilities.
