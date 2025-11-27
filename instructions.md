@@ -263,7 +263,7 @@ npm run dev
 ```
 
 **Network Status:**
-- Testnet Explorer: https://testnet.algoexplorer.io/
+- Testnet Explorer: https://lora.algokit.io/testnet/
 - Mainnet Explorer: https://algoexplorer.io/
 
 ## 🚀 Production Deployment
