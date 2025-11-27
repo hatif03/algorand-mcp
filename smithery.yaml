@@ -44,3 +44,4 @@ startCommand:
     ALGORAND_INDEXER: "https://testnet-idx.algonode.cloud"
     NFD_API_URL: "https://api.nf.domains"
 
+
